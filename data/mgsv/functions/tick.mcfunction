@@ -1,4 +1,4 @@
-#Player Input
+#Player Data
 execute as @a at @s if score @s carrot matches 1.. run function mgsv:rightclick
 
 #Check and apply enty buff/debuffs
@@ -23,6 +23,9 @@ execute as @e if entity @s[type=skeleton, nbt={NoAI:1b}, tag=moving_s] run execu
 execute as @e if entity @s[type=skeleton, nbt={NoAI:1b}, tag=moving_sw] run execute at @s run tp @s ~-0.1 ~ ~0.1 45 0
 execute as @e if entity @s[type=skeleton, nbt={NoAI:1b}, tag=moving_w] run execute at @s run tp @s ~-0.1 ~ ~ 90 0
 execute as @e if entity @s[type=skeleton, nbt={NoAI:1b}, tag=moving_nw] run execute at @s run tp @s ~-0.1 ~ ~-0.1 135 0
+
+#Enemy detection when player is near
+execute as @e at @s if entity @s[type=skeleton, nbt={NoAI:1b}, tag=seeking] if entity @p[distance=..10] run function mgsv:enemies/detection
 
 #Timer scoreboard loop
 scoreboard players remove @e[scores={timer=0..}] timer 1
