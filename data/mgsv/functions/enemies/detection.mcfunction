@@ -1,13 +1,16 @@
 #Get entity position
 execute store result score @s x_pos run data get entity @s Pos[0] 100
+execute store result score @s y_pos run data get entity @s Pos[1] 100
 execute store result score @s z_pos run data get entity @s Pos[2] 100
 
 #Get objective(player) entity position (Wrong data, still not relative)
 execute store result score @s x_obj_pos_relative run data get entity @p Pos[0] 100
+execute store result score @s y_obj_pos_relative run data get entity @p Pos[1] 100
 execute store result score @s z_obj_pos_relative run data get entity @p Pos[2] 100
 
 #Get true objective(player) postion relative to the entity
 scoreboard players operation @s x_obj_pos_relative -= @s x_pos
+scoreboard players operation @s y_obj_pos_relative -= @s y_pos
 scoreboard players operation @s z_obj_pos_relative -= @s z_pos
 
 #Get entity y rotation sine and cosine
@@ -42,5 +45,17 @@ scoreboard players operation @s y_rot_sine_result /= .100 math_temp
 scoreboard players operation @s y_rot_cosine_result += @s y_rot_sine_result
 scoreboard players operation @s z_obj_pos_result = @s y_rot_cosine_result
 scoreboard players operation @s z_obj_pos_result *= .-1 math_temp
+
+#Find if player is within radar cone
+# |x| < z + 1
+execute if score @s x_obj_pos_result < .0 math_temp run scoreboard players operation @s x_obj_pos_result *= .-1 math_temp
+scoreboard players operation @s z_obj_pos_result += .100 math_temp
+# -2 < y < 2
+execute as @s if score @s y_obj_pos_relative > .-200 math_temp if score @s y_obj_pos_relative < .200 math_temp if score @s z_obj_pos_result > .100 math_temp if score @s x_obj_pos_result < @s z_obj_pos_result run function mgsv:enemies/detection_hit
+# reset detection timer when player is not within detection area
+execute as @s if score @s y_obj_pos_relative < .-200 math_temp run scoreboard players reset @s detection_timer
+execute as @s if score @s y_obj_pos_relative > .200 math_temp run scoreboard players reset @s detection_timer
+execute as @s if score @s z_obj_pos_result < .100 math_temp run scoreboard players reset @s detection_timer
+execute as @s if score @s x_obj_pos_result > @s z_obj_pos_result run scoreboard players reset @s detection_timer
 
 scoreboard players reset .distance ch_rc
